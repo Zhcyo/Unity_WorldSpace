@@ -46,14 +46,14 @@ namespace DapperDino.Mirror.Tutorials.Lobby
                 NetworkClient.RegisterPrefab(prefab);
             }
         }
-
         public override void OnClientConnect()
         {
             base.OnClientConnect();
 
             OnClientConnected?.Invoke();
         }
-
+       
+      
         public override void OnClientDisconnect()
         {
             base.OnClientDisconnect();
@@ -76,13 +76,15 @@ namespace DapperDino.Mirror.Tutorials.Lobby
             }
         }
 
+       
+
         public override void OnServerAddPlayer(NetworkConnection conn)
         {
             if (SceneManager.GetActiveScene().name == menuScene)
             {
                 bool isLeader = RoomPlayers.Count == 0;
-
-                NetworkRoomPlayerLobby roomPlayerInstance = Instantiate(roomPlayerPrefab);
+               
+                NetworkRoomPlayerLobby roomPlayerInstance = Instantiate(roomPlayerPrefab.gameObject).GetComponent<NetworkRoomPlayerLobby>();
 
                 roomPlayerInstance.IsLeader = isLeader;
 
@@ -169,7 +171,6 @@ namespace DapperDino.Mirror.Tutorials.Lobby
         {
             if(sceneName.StartsWith("Scene_Map"))
             {
-                Debug.Log(111);
                 GameObject playerSpawnSystemInstance = Instantiate(playerSpawnSystem);
                 NetworkServer.Spawn(playerSpawnSystemInstance);
                 //GameObject roundSystemInstance = Instantiate(roundSystem);
