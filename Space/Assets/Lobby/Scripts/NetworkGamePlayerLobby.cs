@@ -1,7 +1,6 @@
 ﻿using Mirror;
 
-namespace DapperDino.Mirror.Tutorials.Lobby
-{
+
     public class NetworkGamePlayerLobby : NetworkBehaviour
     {
         [SyncVar]
@@ -35,4 +34,4 @@ namespace DapperDino.Mirror.Tutorials.Lobby
             this.displayName = displayName;
         }
     }
-}
+

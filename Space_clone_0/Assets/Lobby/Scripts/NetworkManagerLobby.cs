@@ -5,17 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Steamworks;
 
-namespace DapperDino.Mirror.Tutorials.Lobby
-{
     public class NetworkManagerLobby : NetworkManager
     {
         [SerializeField] private int minPlayers = 2;
-        [Scene] [SerializeField] private string menuScene = string.Empty;
-
-        [Header("Maps")]
-        [SerializeField] private int numberOfRounds = 1;
-        [SerializeField] private MapSet mapSet = null;
+         [SerializeField] private string menuScene = string.Empty;
 
         [Header("Room")]
         [SerializeField] private NetworkRoomPlayerLobby roomPlayerPrefab = null;
@@ -23,7 +18,7 @@ namespace DapperDino.Mirror.Tutorials.Lobby
         [Header("Game")]
         [SerializeField] private NetworkGamePlayerLobby gamePlayerPrefab = null;
         [SerializeField] private GameObject playerSpawnSystem = null;
-        [SerializeField] private GameObject roundSystem = null;
+   
 
         private MapHandler mapHandler;
 
@@ -76,21 +71,36 @@ namespace DapperDino.Mirror.Tutorials.Lobby
             }
         }
 
-       
+
+
 
         public override void OnServerAddPlayer(NetworkConnection conn)
         {
-            if (SceneManager.GetActiveScene().name == menuScene)
-            {
-                bool isLeader = RoomPlayers.Count == 0;
-               
-                NetworkRoomPlayerLobby roomPlayerInstance = Instantiate(roomPlayerPrefab.gameObject).GetComponent<NetworkRoomPlayerLobby>();
 
-                roomPlayerInstance.IsLeader = isLeader;
+        //if (SceneManager.GetActiveScene().name == menuScene)
+        //{
 
-                NetworkServer.AddPlayerForConnection(conn, roomPlayerInstance.gameObject);
-            }
+        //    NetworkRoomPlayerLobby roomPlayerInstance = Instantiate(roomPlayerPrefab.gameObject).GetComponent<NetworkRoomPlayerLobby>();
+        //    bool isLeader = RoomPlayers.Count == 0;
+        //    roomPlayerInstance.IsLeader = isLeader;
+        //    CSteamID steamId = SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.LobbyId, numPlayers - 1);
+        //    roomPlayerInstance.SetSteamId(steamId.m_SteamID);
+        //    NetworkServer.AddPlayerForConnection(conn, roomPlayerInstance.gameObject);
+        //    Debug.Log(steamId);
+        //}
+        if (SceneManager.GetActiveScene().name == menuScene)
+        {
+
+            NetworkRoomPlayerLobby roomPlayerInstance = Instantiate(roomPlayerPrefab.gameObject).GetComponent<NetworkRoomPlayerLobby>();
+            bool isLeader = RoomPlayers.Count == 0;
+            roomPlayerInstance.IsLeader = isLeader;
+            NetworkServer.AddPlayerForConnection(conn, roomPlayerInstance.gameObject);
+            CSteamID steamId = SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.LobbyId, numPlayers - 1);
+            var playerInfoDisplay = conn.identity.GetComponent<NetworkRoomPlayerLobby>();
+            playerInfoDisplay.SetSteamId(steamId.m_SteamID);
+         
         }
+    }
 
         public override void OnServerDisconnect(NetworkConnection conn)
         {
@@ -140,9 +150,7 @@ namespace DapperDino.Mirror.Tutorials.Lobby
             {
                 if (!IsReadyToStart()) { return; }
 
-               // mapHandler = new MapHandler(mapSet, numberOfRounds);
-
-                // ServerChangeScene(mapHandler.NextMap);
+          
                 ServerChangeScene("Scene_Map_01");
 
             }
@@ -157,7 +165,7 @@ namespace DapperDino.Mirror.Tutorials.Lobby
                 {
                     var conn = RoomPlayers[i].connectionToClient;
                     var gameplayerInstance = Instantiate(gamePlayerPrefab);
-                    gameplayerInstance.SetDisplayName(RoomPlayers[i].DisplayName);
+                   
 
                     NetworkServer.Destroy(conn.identity.gameObject);
 
@@ -186,4 +194,4 @@ namespace DapperDino.Mirror.Tutorials.Lobby
             OnServerReadied?.Invoke(conn);
         }
     }
-}
+
